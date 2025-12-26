@@ -5,4 +5,3 @@
 .vscode/
 *.txt
 *.ipynb
-__pycache__
