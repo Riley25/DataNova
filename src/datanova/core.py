@@ -10,7 +10,7 @@ def hello():
 
 
 
-###############################################
+#########################################################
 ###                  NOTES
 #
 #     We need fastparquet, pyarrow, openpyxl, matplotlib, sklearn, numpy, statsmodels
@@ -189,6 +189,14 @@ def profile( df:pd.DataFrame ) -> pd.DataFrame:
         final.drop(columns='Unique', inplace=True)
 
     return( final )
+
+
+
+
+
+###############################
+#    Descriptive Plotting     #
+###############################
 
 
 
