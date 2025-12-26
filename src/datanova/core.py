@@ -177,8 +177,10 @@ def bar_chart_data( df        : pd.DataFrame,
     return( pivot_table.head(top_n_rows) )
 
 
+
 def bar(                df       : pd.DataFrame, 
                         col_name : str, 
+                        * , 
                         top_n    : int   = 6 ,
                         bar_color: str   = "#4d9b1e", 
                         width    : float = 13.33 , 
