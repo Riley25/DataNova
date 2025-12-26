@@ -30,9 +30,8 @@ def hello():
     print("Welcome to DataNova!")
 
 
-###############################
-#    Data Loading & Profile   #
-###############################
+#----------------------------------------
+#       Data Loading & Profile    
 
 
 def load_data(uploaded_file:str,  excel_sheet: Optional[Union[str, int]] = 0) -> pd.DataFrame:
@@ -135,9 +134,9 @@ def profile( df:pd.DataFrame ) -> pd.DataFrame:
 
 
 
-###############################
-#    Descriptive Plotting     #
-###############################
+#----------------------------------------
+#       Descriptive Plotting     
+
 
 
 def bar_chart_data( df        : pd.DataFrame, 
@@ -327,10 +326,13 @@ def hist_data(df : pd.DataFrame,  var_name : str) -> pd.DataFrame:
 
 def hist(               df       : pd.DataFrame, 
                         col_name : str, 
-                        bar_color: str   = "#4d9b1e", 
-                        n_bins   : int   = 20    ,  
-                        width    : float = 13.33 , 
-                        height   : float =  6.0    ) -> Figure:
+                        *,
+                        xlim: Union[list, None] = None ,
+                        n_bins: int = 20 ,
+                        bar_color: str = "#4d9b1e" ,
+                        width: float = 13.33 ,
+                        height: float = 6.0 ,   
+                        ) -> Figure:
     """
     Create a combined visualization: box plot, histogram, and a summary-statistics table.
 
@@ -373,9 +375,12 @@ def hist(               df       : pd.DataFrame,
 
     # Box Plot (Top-Left)
     ax_box = fig.add_subplot(gs[0, 0:2])
-    ax_box.grid(axis='x',zorder=1.0)
     ax_box.boxplot(data, vert=False, patch_artist=True, boxprops=dict(facecolor=bar_color), zorder=2.0)  
+    #ax_box.grid(axis='x',zorder=1.0)
 
+    if xlim is not None:
+        ax_box.set_xlim(xlim)
+        
     ax_box.axes.get_yaxis().set_visible(False)  # Hide y-axis for box plot
     ax_box.set_xticklabels([])                  # Remove x-axis labels
     ax_box.spines[['top','left', 'right', 'bottom']].set_visible(False)
@@ -384,7 +389,12 @@ def hist(               df       : pd.DataFrame,
     # Histogram (Bottom-Left)
     ax_hist = fig.add_subplot(gs[1, 0:2])
     ax_hist.grid(axis='x' ,zorder=3.0)
-    ax_hist.hist(data, bins=n_bins, color=bar_color, edgecolor='black', zorder = 4.0)
+
+
+    if xlim == None:
+        ax_hist.hist(data, bins=n_bins, color=bar_color, edgecolor='black', zorder = 4.0)
+    else:
+        ax_hist.hist(data, bins=n_bins, range = xlim, color=bar_color, edgecolor='black', zorder = 4.0)
     
     ax_hist.set_xlabel(col_name, fontsize=13)
     ax_hist.set_ylabel("Count", fontsize = 13)
@@ -414,9 +424,11 @@ def hist(               df       : pd.DataFrame,
     return( fig )
 
 
-#################################
-#   Exploritory Data Analysis   #
-#################################
+
+
+#----------------------------------------
+#   Exploritory Data Analysis - EDA   
+
 
 BAR_COLORS = ["#826fc2","#001f80","#4d9b1e","#f865c6","#ecd378","#ba004c","#8f4400","#f65656"]*10000
 
@@ -433,9 +445,10 @@ BAR_COLORS = ["#826fc2","#001f80","#4d9b1e","#f865c6","#ecd378","#ba004c","#8f44
 
 
 
-#############################
-#  Appendix - Nice to Have  #
-#############################
+
+#----------------------------------------
+#       Appendix - Nice to Have  
+
 
 def highlight_missing(val):
     """
