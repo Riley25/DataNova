@@ -6,7 +6,7 @@
 #
 #  Date:    Winter 2025
 #
-#  Author:  Riley
+#  Author:  Riley & Justyna
 #
 #-----------------------------------------------------------------
 #                            NOTES
@@ -345,6 +345,9 @@ def hist(               df       : pd.DataFrame,
 
     col_name : str
         Column name to plot (data must be numeric).
+    
+    xlim: list
+        The min and max range to be plotted
 
     bar_color : str
         Bar/box color (e.g., '#4d9b1e').
