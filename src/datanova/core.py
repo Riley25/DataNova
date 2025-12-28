@@ -13,25 +13,27 @@
 #
 #     dependents: fastparquet, pyarrow, openpyxl, matplotlib, sklearn, numpy, statsmodels
 
-import pandas as pd 
+
 import os
+
+from typing import Optional, Sequence, Union
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.figure import Figure
+import matplotlib.ticker as mtick
 
-from typing import Optional, Sequence, Union
+import pandas as pd 
 
 
 pd.set_option('display.max_columns', None)
 
+#----------------------------------------
+#       Data Loading & Profile    
+
 
 def hello():
     print("Welcome to DataNova!")
-
-
-#----------------------------------------
-#       Data Loading & Profile    
 
 
 def load_data(uploaded_file:str,  excel_sheet: Optional[Union[str, int]] = 0) -> pd.DataFrame:
@@ -138,7 +140,6 @@ def profile( df:pd.DataFrame ) -> pd.DataFrame:
 #       Descriptive Plotting     
 
 
-
 def bar_chart_data( df        : pd.DataFrame, 
                     var_name  : str, 
                     top_n_rows: int   = 6 ) -> pd.DataFrame:
@@ -201,11 +202,11 @@ def bar(                df       : pd.DataFrame,
     col_name : str
         Column name to plot (data must be text).
 
-    bar_color : str
-        Bar color as HEX code (e.g., '#4d9b1e').
-
     top_n : int
         Number of bars
+
+    bar_color : str
+        Bar color as HEX code (e.g., '#4d9b1e').
 
     width : float, default 13.33
         Figure width in inches.
@@ -218,6 +219,8 @@ def bar(                df       : pd.DataFrame,
     matplotlib.figure.Figure
         Final graph created
     """
+
+    plt.rcParams["font.family"] = "Times New Roman"
 
     # Calculate bar chart data using your utility function
     bar_data = bar_chart_data(df, col_name, top_n_rows=top_n)
@@ -234,14 +237,21 @@ def bar(                df       : pd.DataFrame,
     ax_bar = fig.add_subplot(gs[0, 0])
     ax_bar.grid(axis='x', zorder=1.0)
     ax_bar.barh(bar_data[col_name], bar_data["count"], color=bar_color, edgecolor="black", zorder=2.0)
+
     ax_bar.set_title(f"Bar Chart of {col_name}", fontsize=15)
-    ax_bar.set_xlabel("Occurrences", fontsize=13)
-    ax_bar.set_ylabel(col_name, fontsize=13)
+    ax_bar.set_xlabel("Occurrences", fontsize=14)
+    ax_bar.set_ylabel(col_name, fontsize=14)
+
+    # Increase font size for tick labels
     for label in (ax_bar.get_xticklabels() + ax_bar.get_yticklabels()):
         label.set_fontsize(11)
 
     ax_bar.invert_yaxis()  # Invert y-axis for better readability
     ax_bar.spines[['top', 'right']].set_visible(False)
+
+    ax_bar.xaxis.set_major_formatter(
+        mtick.StrMethodFormatter('{x:,.0f}')
+    )
 
     # Table (Right)
     ax_table = fig.add_subplot(gs[0, 1])
@@ -271,7 +281,6 @@ def bar(                df       : pd.DataFrame,
     # Adjust layout to avoid overlap
     plt.tight_layout()
 
-    plt.tight_layout()
     plt.close(fig)
     
     return( fig )
@@ -367,6 +376,8 @@ def hist(               df       : pd.DataFrame,
         Final graph created
 
     """
+    plt.rcParams["font.family"] = "Times New Roman"
+
     
     # Calculate statistics for the table
     stats = hist_data(df, col_name)  # Use your utility function here 
@@ -406,6 +417,10 @@ def hist(               df       : pd.DataFrame,
     for label in (ax_hist.get_xticklabels() + ax_hist.get_yticklabels()): label.set_fontsize(11)
     ax_hist.spines[['top','right']].set_visible(False)
     
+    # commas for y-axis (12,345 --> 12,345)
+    ax_hist.yaxis.set_major_formatter(
+        mtick.StrMethodFormatter('{x:,.0f}')
+    )
 
     # Table (Right)
     ax_table = fig.add_subplot(gs[:, 2])  # Span rows 0 and 1 for the table
@@ -435,9 +450,79 @@ def hist(               df       : pd.DataFrame,
 #   Exploritory Data Analysis - EDA   
 
 
-BAR_COLORS = ["#826fc2","#001f80","#4d9b1e","#f865c6","#ecd378","#ba004c","#8f4400","#f65656"]*10000
+def _in_notebook() -> bool:
+    """
+    This function returns True or False:
+    
+    True  --> The Python code is       being executed in a Jupyter Notebook
+    False --> The Python code is  NOT  being executed in a Jupyter Notebook
+    
+    Returns
+    ----------
+    bool
+    """
+    try:
+        from IPython import get_ipython
+        shell = get_ipython().__class__.__name__
+        return shell == "ZMQInteractiveShell"  # Jupyter/VSCode notebooks
+    except Exception:
+        return False
+    
+
+def EDA( df: pd.DataFrame ) -> list[Figure]:
+    """
+    This function is a quick “EDA” analysis. (Exploratory Data Analysis)
+    Plot the distribution for every column in a dataset.  
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataset.
+
+    Returns
+    ----------
+    list[matplotlib.figure.Figure]
+        Figures created.
+    """
+
+    n_row, n_col = df.shape
+    bar_colors = ["#826fc2","#143499","#4d9b1e","#f865c6","#ecd378","#ba004c","#8f4400","#f65656"]*(n_col*2)
+    figs = []
 
 
+    in_nb = _in_notebook()
+    if in_nb:
+        from IPython.display import display
+    
+        
+    for count, var_name in enumerate(df.columns):
+        
+        # IF the column is 100% blank then skip it
+        if df[var_name].isna().all():
+            continue
+
+
+        bar_color_i = bar_colors[count]            
+
+        if pd.api.types.is_numeric_dtype( df[var_name] ):
+            fig = hist(df,var_name, bar_color = bar_color_i)
+            figs.append(fig)
+
+        elif (pd.api.types.is_string_dtype(df[var_name]) or pd.api.types.is_object_dtype(df[var_name]) or pd.api.types.is_categorical_dtype(df[var_name])):
+            fig = bar(df, var_name, bar_color = bar_color_i)
+            figs.append(fig)
+        
+
+        # IF the data type is not numeric, or text, 
+        # THEN stop the loop 
+        # AND go to the next iteration
+        else: 
+            continue
+        
+        if in_nb:
+            display(fig)
+
+    return(figs)
 
 
 
