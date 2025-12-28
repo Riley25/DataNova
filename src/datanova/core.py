@@ -528,11 +528,6 @@ def EDA( df: pd.DataFrame ) -> list[Figure]:
 
 
 
-
-
-
-
-
 #----------------------------------------
 #       Appendix - Nice to Have  
 
