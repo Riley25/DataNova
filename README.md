@@ -10,8 +10,10 @@ Analyze, summarize, and visualize your data in just a few lines of code.
 
 ## 🚀 Features
 - **Instant profiling**: Summarize your dataset structure with `profile(df)`
-- **Bar Graph**: Show the top 5 most common 
-- **Simple regression & stats** (coming soon!)
+- **Bar Graph**: Shows the top 5 most common values `bar(df, 'Column_Name')`
+- **Histogram**: Plots the distribution of a numerical column `hist(df, 'Column_Name')`
+- **EDA Analysis**: `EDA(df)`
+- **Simple Linear Regression** (coming soon!)
 
 
 
@@ -64,6 +66,7 @@ eda( WINE_DF )
 ```
 
 Creates bar graphs and histograms for all columns in the dataset.
+
 
 
 --- 
