@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: DataNova
-Version: 0.0.4
+Version: 0.0.5
 Summary: This is the start of DataNova.
 Author: Riley Heiman
 License: MIT
@@ -57,9 +57,7 @@ profile( WINE_DF )
 
 $$\\:$$
 $$\\:$$
-$$\\:$$
-$$\\:$$
-$$\\:$$
+
 
 ```python
 bar( WINE_DF , 'province')
@@ -73,9 +71,7 @@ bar( WINE_DF , 'province')
 
 $$\\:$$
 $$\\:$$
-$$\\:$$
-$$\\:$$
-$$\\:$$
+
 
 ```python
 hist( WINE_DF , 'price' )
@@ -88,10 +84,7 @@ hist( WINE_DF , 'price' )
 
 
 $$\\:$$
-$$\\:$$
-$$\\:$$
-$$\\:$$
-$$\\:$$
+
 
 ```python
 eda( WINE_DF )
