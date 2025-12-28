@@ -46,6 +46,7 @@ profile( WINE_DF )
 ```python
 bar( WINE_DF , 'province')
 ```
+- 32% of wine sales come from California. The top 5 regions make up most sales (>50%)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/BAR_GRAPH_v3.png" alt="Bar Graph Example" width="800">
@@ -56,7 +57,7 @@ bar( WINE_DF , 'province')
 ```python
 hist( WINE_DF , 'price' )
 ```
-On average, a bottle of wine costs $38. The price ranges from: $20-$48
+- On average, a bottle of wine costs $38. The price ranges from: $20-$48
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/HIST.png" alt="Histogram Example" width="800">
