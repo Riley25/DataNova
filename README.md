@@ -26,6 +26,7 @@
 Examples below use a dataset called `WINE_DF`
 
 ```python
+from datanova import *
 profile( WINE_DF )
 ```
 - Most of our data is not blank, expect for 'price' (*only 5% blank*).
@@ -83,6 +84,6 @@ eda( WINE_DF )
 
 ## 🛠️ Installation
 ```bash
-pip install datanova
+pip install DataNova
 ``` 
 
