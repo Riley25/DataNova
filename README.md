@@ -42,6 +42,7 @@ profile( WINE_DF )
 
 
 
+$\:$
 
 ```python
 bar( WINE_DF , 'province')
@@ -69,7 +70,7 @@ hist( WINE_DF , 'price' )
 eda( WINE_DF )
 ```
 
-Creates bar graphs and histograms for all columns in the dataset.
+- Creates bar graphs and histograms for all columns in the dataset.
 
 
 
