@@ -58,6 +58,11 @@ bar( WINE_DF , 'province')
 </p>
 
 
+$$\\:$$
+$$\\:$$
+$$\\:$$
+$$\\:$$
+$$\\:$$
 
 ```python
 hist( WINE_DF , 'price' )
@@ -69,6 +74,11 @@ hist( WINE_DF , 'price' )
 </p>
 
 
+$$\\:$$
+$$\\:$$
+$$\\:$$
+$$\\:$$
+$$\\:$$
 
 ```python
 eda( WINE_DF )
