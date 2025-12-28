@@ -44,6 +44,9 @@ profile( WINE_DF )
 
 $$\\:$$
 $$\\:$$
+$$\\:$$
+$$\\:$$
+$$\\:$$
 
 ```python
 bar( WINE_DF , 'province')
