@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/supernova.jpg" alt="DataNova Logo" width="800">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/supernova.jpg" alt="DataNova Logo" width="800">
 </p>
 
 # 🌌 DataNova
@@ -43,7 +43,7 @@ bar( WINE_DF , 'province')
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/BAR_GRAPH_v3.png" alt="DataNova Logo" width="800">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/BAR_GRAPH_v3.png" alt="Bar Graph Example" width="800">
 </p>
 
 
@@ -53,10 +53,10 @@ $\:$
 ```python
 hist( WINE_DF , 'price' )
 ```
-*On average, a bottle of wine costs $ \\$38 $. The price ranges from $ \\$20$ - $\\$48$ *
+*On average, a bottle of wine costs $$ 38 $$. The price ranges from $ \\$20$ - $\\$48$ *
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/HIST.png" alt="DataNova Logo" width="800">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/HIST.png" alt="Histogram Example" width="800">
 </p>
 
 
