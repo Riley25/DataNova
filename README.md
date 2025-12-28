@@ -42,7 +42,6 @@ profile( WINE_DF )
 
 $$\\:$$
 $$\\:$$
-$$\\:$$
 
 
 ```python
@@ -57,7 +56,6 @@ bar( WINE_DF , 'province')
 
 $$\\:$$
 $$\\:$$
-$$\\:$$
 
 
 ```python
@@ -70,7 +68,6 @@ hist( WINE_DF , 'price' )
 </p>
 
 
-$$\\:$$
 $$\\:$$
 
 
