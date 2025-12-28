@@ -14,6 +14,8 @@ Analyze your data in just a few lines of code!
 - **Bar Graph**: Shows the top 5 most common values `bar(df, 'Column_Name')`
 - **Histogram**: Plots the distribution of a numerical column `hist(df, 'Column_Name')`
 - **EDA Analysis**: `EDA(df)`
+
+*what's next?*
 - **Simple Linear Regression** (coming soon!)
 
 
