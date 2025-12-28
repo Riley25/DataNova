@@ -5,17 +5,28 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "DataNova"                      
 version = "0.0.5"           
-description = "This is the start of DataNova."
+description = "A friendly toolkit for quick exploratory data analysis (EDA)"
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }         
-authors = [{ name = "Riley Heiman" }]
+authors = [{ name = "Riley" }]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 keywords = ["eda", "statistics", "profiling", "regression", "visualization", "toolkit"]
+
+dependencies = [
+  "pandas",
+  "numpy",
+  "matplotlib",
+  "openpyxl",
+  "statsmodels",
+  "scikit-learn",
+  "pyarrow",
+  "fastparquet"
+]
 
 [project.urls]
 Homepage = "https://github.com/Riley25/DataNova"
