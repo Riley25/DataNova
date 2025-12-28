@@ -41,7 +41,7 @@ bar( WINE_DF )
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/BAR_GRAPH.png" alt="DataNova Logo" width="800">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/BAR_GRAPH_v2.png" alt="DataNova Logo" width="800">
 </p>
 
 
