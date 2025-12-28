@@ -47,14 +47,11 @@ bar( WINE_DF , 'province')
 </p>
 
 
-The equation is. $x = {-b \pm \sqrt{b^2-4ac} \over 2a}$ 
-
-$ $
 
 ```python
 hist( WINE_DF , 'price' )
 ```
-On average, a bottle of wine costs $38$. The price ranges from: $\$20-\$48$
+On average, a bottle of wine costs $38$ . The price ranges from: $\$20-\$48$
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/HIST.png" alt="Histogram Example" width="800">
