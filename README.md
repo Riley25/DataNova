@@ -10,7 +10,7 @@ Analyze your data in just a few lines of code!
 ---
 
 ## 🚀 Features
-- **Instant profiling**: Summarize your dataset structure with `profile(df)`
+- **Instant profiling**: Summarize your data with `profile(df)`
 - **Bar Graph**: Shows the top 5 most common values `bar(df, 'Column_Name')`
 - **Histogram**: Plots the distribution of a numerical column `hist(df, 'Column_Name')`
 - **EDA Analysis**: `EDA(df)`
