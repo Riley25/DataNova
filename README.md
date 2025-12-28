@@ -3,9 +3,7 @@
 </p>
 
 # 🌌 DataNova
-**DataNova** — a toolkit for data exploration in Python.  
-
-Analyze your data in just a few lines of code!
+**DataNova** — a toolkit for data exploration in Python with a few lines of code!
 
 ---
 
