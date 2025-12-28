@@ -189,10 +189,7 @@ def bar(                df       : pd.DataFrame,
     """
     Creates a combined plot with:
     - A bar chart on the left
-    - A summary table of the top 6 most frequent values on the right
-        Create a combined visualization: box plot, histogram, and a summary-statistics table.
-
-    Create a bar graph with summary table
+    - A summary table of most frequent values on the right
 
     Parameters
     ----------
