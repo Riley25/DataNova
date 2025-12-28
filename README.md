@@ -46,7 +46,7 @@ profile( WINE_DF )
 ```python
 bar( WINE_DF , 'province')
 ```
-- 32% of wine sales come from California. The top 5 regions make up most sales (>50%)
+- California accounts for 32% of total wine sales, and the top five regions collectively contribute over half of all sales.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/BAR_GRAPH_v3.png" alt="Bar Graph Example" width="800">
