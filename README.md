@@ -20,7 +20,7 @@ Analyze, summarize, and visualize your data in just a few lines of code.
 
 ## 🧭 Examples
 
-Dataset is called `WINE_DF`
+Examples use a dataset called `WINE_DF`
 
 ```python
 profile( WINE_DF )
