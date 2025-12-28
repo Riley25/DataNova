@@ -25,7 +25,7 @@ Examples use a dataset called `WINE_DF`
 ```python
 profile( WINE_DF )
 ```
-* Most of our data is not blank, expect for 'price' (only 5% blank). *
+- Most of our data is not blank, expect for 'price' (*only 5% blank*).
 
 |   | Variable Name | Variable Type | Missing Count | % Blank | Unique Values | Most Frequent Value | Mean  | Standard Deviation | Min | 25% | Median | 75% | Max |
 |---|---------------|---------------|---------------|---------|----------------|---------------------|-------|--------------------|-----|-----|--------|-----|-----|
@@ -57,6 +57,13 @@ On average, a bottle of wine costs $38. The price ranges from: $20-$48
   <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/HIST.png" alt="Histogram Example" width="800">
 </p>
 
+
+
+```python
+eda( WINE_DF )
+```
+
+Creates bar graphs and histograms for all columns in the dataset.
 
 
 --- 
