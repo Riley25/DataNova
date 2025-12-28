@@ -3,13 +3,14 @@
 </p>
 
 # 🌌 DataNova
-**DataNova** — a lightweight, R-inspired toolkit for quick data exploration in Python.  
+**DataNova** — a toolkit for quick data exploration in Python.  
 Analyze, summarize, and visualize your data in just a few lines of code.
 
 ---
 
 ## 🚀 Features
-- **Instant profiling**: Summarize your dataset structure with `dn.profile(df)`
+- **Instant profiling**: Summarize your dataset structure with `profile(df)`
+- **Bar Graph**: Show the top 5 most common
 - **Simple regression & stats** (coming soon!)
 
 ---
@@ -17,3 +18,6 @@ Analyze, summarize, and visualize your data in just a few lines of code.
 ## 🧭 Installation
 ```bash
 pip install datanova
+``` 
+
+test
