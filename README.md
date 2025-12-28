@@ -36,7 +36,7 @@ profile( WINE_DF )
 | 4 | variety       | object        | 0             | 0       | 161            | Pinot Noir          |       |                    |     |     |        |     |     |
 
 
-$\:$
+
 
 ```python
 bar( WINE_DF , 'province')
@@ -47,6 +47,7 @@ bar( WINE_DF , 'province')
 </p>
 
 
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$
 
 $\:$
 
