@@ -25,7 +25,7 @@ Analyze your data in just a few lines of code!
 
 ## 🧭 Examples
 
-Examples use a dataset called `WINE_DF`
+Examples below use a dataset called `WINE_DF`
 
 ```python
 profile( WINE_DF )
