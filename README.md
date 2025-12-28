@@ -10,14 +10,22 @@ Analyze, summarize, and visualize your data in just a few lines of code.
 
 ## 🚀 Features
 - **Instant profiling**: Summarize your dataset structure with `profile(df)`
-- **Bar Graph**: Show the top 5 most common
+- **Bar Graph**: Show the top 5 most common 
 - **Simple regression & stats** (coming soon!)
+
+
+
 
 ---
 
-## 🧭 Installation
+## 🧭 Examples
+
+
+
+---
+
+## 🛠️ Installation
 ```bash
 pip install datanova
 ``` 
 
-test
