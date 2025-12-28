@@ -183,7 +183,7 @@ def bar(                df       : pd.DataFrame,
                         col_name : str, 
                         * , 
                         top_n    : int   = 5 ,
-                        bar_color: str   = "#4d9b1e", 
+                        bar_color: str   = "#118dff", 
                         width    : float = 13.33 , 
                         height   : float =  6.0    ) -> Figure:
     """
@@ -337,7 +337,7 @@ def hist(               df       : pd.DataFrame,
                         *,
                         xlim: Union[list, None] = None ,
                         n_bins: int = 20 ,
-                        bar_color: str = "#4d9b1e" ,
+                        bar_color: str = "#118dff" ,
                         width: float = 13.33 ,
                         height: float = 6.0 ,   
                         ) -> Figure:

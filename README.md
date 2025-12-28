@@ -25,7 +25,7 @@ Examples use a dataset called `WINE_DF`
 ```python
 profile( WINE_DF )
 ```
-*Most of our data is not blank, expect for 'price'*
+* Most of our data is not blank, expect for 'price' (only 5% blank). *
 
 |   | Variable Name | Variable Type | Missing Count | % Blank | Unique Values | Most Frequent Value | Mean  | Standard Deviation | Min | 25% | Median | 75% | Max |
 |---|---------------|---------------|---------------|---------|----------------|---------------------|-------|--------------------|-----|-----|--------|-----|-----|
@@ -36,13 +36,29 @@ profile( WINE_DF )
 | 4 | variety       | object        | 0             | 0       | 161            | Pinot Noir          |       |                    |     |     |        |     |     |
 
 
+$\:$
+
 ```python
-bar( WINE_DF )
+bar( WINE_DF , 'province')
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/BAR_GRAPH_v2.png" alt="DataNova Logo" width="800">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/BAR_GRAPH_v3.png" alt="DataNova Logo" width="800">
 </p>
+
+
+
+$\:$
+
+```python
+hist( WINE_DF , 'price' )
+```
+*On average, a bottle of wine costs $ \\$38 $. The price ranges from $ \\$20$ - $\\$48$ *
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/imges/HIST.png" alt="DataNova Logo" width="800">
+</p>
+
 
 
 --- 
