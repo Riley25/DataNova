@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # Public API imports
 from .core import (
-    EDA,
+    eda,
     bar,
     bar_chart_data,
     hello,
@@ -10,6 +10,7 @@ from .core import (
     hist_data,
     load_data,
     profile,
+    lm,
     WINE_DF
 )
 
@@ -21,5 +22,6 @@ __all__ = [
     "bar",
     "hist_data",
     "hist",
-    "EDA", 
+    "eda", 
+    "lm",
     "WINE_DF"]

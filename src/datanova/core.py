@@ -6,12 +6,11 @@
 #
 #  Date:    Winter 2025
 #
-#  Author:  Riley
+#  Author:  Riley & Justyna
 #
 #-----------------------------------------------------------------
 #                            NOTES
 #
-#     dependents: fastparquet, pyarrow, openpyxl, matplotlib, sklearn, numpy, statsmodels
 #  
 
 
@@ -493,7 +492,7 @@ def _in_notebook() -> bool:
         return False
     
 
-def EDA( df: pd.DataFrame ) -> list[Figure]:
+def eda( df: pd.DataFrame ) -> list[Figure]:
     """
     This function is a quick “EDA” analysis. (Exploratory Data Analysis)
     Plot the distribution for every column in a dataset.  
