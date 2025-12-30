@@ -98,9 +98,7 @@ display( figure )
 <p align="center">
   <img 
   src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/lm_plot.png" alt="Linear Model" 
-  width="500"
-  style="display: block; margin-left: auto; margin-right: auto;"
-  >
+  width="500">
 </p>
 
 
