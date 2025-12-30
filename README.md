@@ -71,6 +71,7 @@ hist( WINE_DF , 'price' , xlim = [0,105], n_bins = 25)
 
 
 $$\\:$$
+$$\\:$$
 
 ```python
 eda( WINE_DF )
@@ -78,6 +79,7 @@ eda( WINE_DF )
 
 - Creates bar graphs **and** histograms for all columns in the dataset.
 
+$$\\:$$
 $$\\:$$
 
 ```python
