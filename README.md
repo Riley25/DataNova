@@ -78,11 +78,9 @@ eda( WINE_DF )
 ```
 - Creates bar graphs **and** histograms for all columns in the dataset.
 
+$$\\:$$
 
 ### Regression Modeling 
-
-$$\\:$$
-$$\\:$$
 
 ```python
 figure, model = lm(WINE_DF, 'points' , 'price' ,  ylimit = [0,150] ,
