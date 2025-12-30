@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 # Public API imports
@@ -11,6 +10,7 @@ from .core import (
     hist_data,
     load_data,
     profile,
+    WINE_DF
 )
 
 __all__ = [
@@ -21,4 +21,5 @@ __all__ = [
     "bar",
     "hist_data",
     "hist",
-    "EDA"]
+    "EDA", 
+    "WINE_DF"]
