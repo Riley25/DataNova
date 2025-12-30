@@ -86,7 +86,7 @@ $$\\:$$
 
 ```python
 figure, model = lm(WINE_DF, 'points' , 'price' ,  ylimit = [0,150] ,
-                  xtitle = 'Points' , ytitle = 'Price ($)' , 
+                   xtitle = 'Points' , ytitle = 'Price ($)' , 
                    show_summary=False , alpha = 0.8 ) 
 
 display( figure )  
