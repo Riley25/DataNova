@@ -76,10 +76,10 @@ $$\\:$$
 ```python
 eda( WINE_DF )
 ```
+- Creates bar graphs **and** histograms for all columns in the dataset.
 
 
 ### Regression Modeling 
-- Creates bar graphs **and** histograms for all columns in the dataset.
 
 $$\\:$$
 $$\\:$$
@@ -96,7 +96,11 @@ display( figure )
 - As the quality of wine increases (points), the price also increases.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/lm_plot.png" alt="Linear Model" width="500">
+  <img 
+  src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/lm_plot.png" alt="Linear Model" 
+  width="500"
+  style="display: block; margin-left: auto; margin-right: auto;"
+  >
 </p>
 
 
