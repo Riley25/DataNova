@@ -77,6 +77,8 @@ $$\\:$$
 eda( WINE_DF )
 ```
 
+
+### Regression Modeling 
 - Creates bar graphs **and** histograms for all columns in the dataset.
 
 $$\\:$$
