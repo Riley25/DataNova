@@ -10,11 +10,12 @@
 ## 🚀 Features
 - **Instant profiling**: Summarize your data with `profile(df)`
 - **Bar Graph**: Shows the top 5 most common values `bar(df, 'Column_Name')`
-- **Histogram**: Plots the distribution of a numerical column `hist(df, 'Column_Name')`
-- **EDA Analysis**: `EDA(df)`
+- **Histogram**: Plots the distribution of numerical data `hist(df, 'Column_Name')`
+- **Exploratory Data Analysis**: `EDA(df)`
+- **Simple Linear Regression**: `lm(df, x_var, y_var)`
 
 *what's next?*
-- **Simple Linear Regression** (coming soon!)
+- **Logistic Regression** (coming soon!)
 
 
 
@@ -23,7 +24,7 @@
 
 ## 🧭 Examples
 
-Examples below use a dataset called `WINE_DF`
+Examples below use a dataset provided in the package called `WINE_DF`
 
 ```python
 from datanova import *
@@ -46,7 +47,7 @@ $$\\:$$
 
 
 ```python
-bar( WINE_DF , 'province')
+bar( WINE_DF , 'province', top_n=7)
 ```
 - California accounts for 32% of total wine sales, and the top five regions collectively contribute over half of all sales.
 
@@ -60,7 +61,7 @@ $$\\:$$
 
 
 ```python
-hist( WINE_DF , 'price' )
+hist( WINE_DF , 'price' , xlim = [0,105], n_bins = 25)
 ```
 - On average, a bottle of wine costs $38. The price ranges from: $20-$48
 
@@ -71,12 +72,28 @@ hist( WINE_DF , 'price' )
 
 $$\\:$$
 
-
 ```python
 eda( WINE_DF )
 ```
 
-- Creates bar graphs and histograms for all columns in the dataset.
+- Creates bar graphs **and** histograms for all columns in the dataset.
+
+$$\\:$$
+
+```python
+figure, model = lm(WINE_DF, 'points' , 'price' ,  ylimit = [0,150] ,
+                   ytitle = 'Price ($)', xtitle = 'Points' , 
+                   show_summary=False , alpha = 0.8 ) 
+
+display( figure )  
+```
+
+- Creates a simple linear regression 
+- As the quality of wine increases (points), the price also increases.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/lm_plot.png" alt="Linear Model" width="800">
+</p>
 
 
 

@@ -13,20 +13,27 @@
 #
 #     dependents: fastparquet, pyarrow, openpyxl, matplotlib, sklearn, numpy, statsmodels
 #  
-#                 textwrap
 
+
+
+# Standard Library 
 import os
-
-from typing import Optional, Sequence, Union
-
 import textwrap
+from typing import Optional, Sequence, Union
+from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.figure import Figure
 import matplotlib.ticker as mtick
 
+
 import pandas as pd 
+import numpy as np
+
+
+import statsmodels.api as sm
+
 
 
 def hello():
@@ -204,7 +211,7 @@ def bar(
 
     for label in (ax_bar.get_xticklabels() + ax_bar.get_yticklabels()):
         label.set_fontsize(11)
-
+    
     ax_bar.invert_yaxis()
     ax_bar.spines[["top", "right"]].set_visible(False)
 
@@ -543,7 +550,142 @@ def EDA( df: pd.DataFrame ) -> list[Figure]:
 
 
 
+#----------------------------------------
+#       Regression Modeling    
 
+#### KEEP THIS ONE!!!!
+
+
+
+
+from typing import Optional, Tuple
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
+
+def lm(
+    df: pd.DataFrame,
+    xvar: str,
+    yvar: str,
+    *,
+    xtitle: Optional[str] = None,
+    ytitle: Optional[str] = None,
+    xlimit: Union[list, None] = None,
+    ylimit: Union[list, None] = None,
+    alpha: float = 0.8,
+    show_summary: bool = True):
+    """
+    PURPOSE
+    -------
+    Fit a simple linear regression model using statsmodels and visualize the results.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataframe.
+
+    xvar : str
+        Independent variable (X).
+
+    yvar : str
+        Dependent variable (Y).
+
+    xtitle, ytitle : str, optional
+        Axis labels. Defaults to column names.
+    
+    xlimit: list
+        The min and max range to be plotted (x axis)
+    
+    ylimit: list
+        The min and max range to be plotted (y axis)
+
+    alpha : float, optional
+        Scatter transparency (default = 0.8).
+
+    show_summary : bool, optional
+        Whether to print the regression summary table (default = True).
+
+    Returns
+    -------
+    model : statsmodels.regression.linear_model.RegressionResultsWrapper
+        The fitted statsmodels OLS regression model.
+    """
+
+    if xvar not in df.columns or yvar not in df.columns:
+        raise ValueError("xvar/yvar must be valid column names in df.")
+
+    data = df[[xvar, yvar]].dropna()
+
+    if data.empty:
+        raise ValueError("No data remaining after dropping NA for xvar and yvar.")
+
+    X = sm.add_constant(data[xvar])
+    y = data[yvar]
+    model = sm.OLS(y, X).fit()
+
+    if show_summary:
+        print(model.summary())
+
+    # Use xlimit for line extent if provided
+    if xlimit is not None:
+        if len(xlimit) != 2:
+            raise ValueError("xlimit must be a (min, max) pair.")
+        x_min, x_max = xlimit
+    else:
+        x_min, x_max = float(data[xvar].min()), float(data[xvar].max())
+
+    x_vals = np.linspace(x_min, x_max, 200)
+    X_pred = sm.add_constant(x_vals)
+    y_pred = model.predict(X_pred)
+
+    x_axis_title = xvar if xtitle is None else xtitle
+    y_axis_title = yvar if ytitle is None else ytitle
+
+
+    #----------------
+    #      Plot
+    _set_plot_style()
+    
+    fig, ax = plt.subplots(figsize=(5.5, 4.8))
+
+    _style_grid(ax, axis="x")
+    _style_grid(ax, axis="y")
+
+    
+    ax.scatter(data[xvar], data[yvar], alpha=alpha, zorder=2)
+
+    
+    slope = model.params[xvar]
+    intercept = model.params["const"]
+    r2 = model.rsquared
+    eqn = f"Y = {slope:.3f}·X + {intercept:.2f} (R²={r2:.2f})"
+
+    
+    ax.plot(x_vals, y_pred, color="red", linewidth=2, label=eqn, zorder=3)
+
+    
+    if xlimit is not None:
+        ax.set_xlim(xlimit)
+    if ylimit is not None:
+        ax.set_ylim(ylimit)
+
+    
+    ax.set_xlabel(x_axis_title, fontsize=16)
+    ax.set_ylabel(y_axis_title, fontsize=16)
+    ax.tick_params(labelsize=13)
+
+    
+    ax.spines[["top", "right"]].set_visible(False)
+
+    
+    ax.legend( loc="upper left", bbox_to_anchor=(.15, 1.25), fancybox=True, shadow=True, frameon=True, fontsize=12)
+
+    fig.tight_layout()
+    plt.close(fig)
+    
+    return( fig , model )
 
 
 
