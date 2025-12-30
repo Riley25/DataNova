@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "DataNova"                      
-version = "0.0.91"           
+version = "0.1.0"           
 description = "A friendly toolkit for quick exploratory data analysis (EDA)"
 readme = "README.md"
 requires-python = ">=3.8"
