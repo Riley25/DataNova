@@ -27,6 +27,8 @@ from matplotlib.figure import Figure
 import matplotlib.ticker as mtick
 
 import pandas as pd 
+
+
 def hello():
     print("Welcome to DataNova!")
 
