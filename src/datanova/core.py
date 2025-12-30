@@ -12,11 +12,14 @@
 #                            NOTES
 #
 #     dependents: fastparquet, pyarrow, openpyxl, matplotlib, sklearn, numpy, statsmodels
-
+#  
+#                 textwrap
 
 import os
 
 from typing import Optional, Sequence, Union
+
+import textwrap
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -24,16 +27,526 @@ from matplotlib.figure import Figure
 import matplotlib.ticker as mtick
 
 import pandas as pd 
+def hello():
+    print("Welcome to DataNova!")
 
 
 #pd.set_option('display.max_columns', None)
 
+#---------------------------------------------
+#       Utility Functions for Plotting    
+
+
+def _set_plot_style() -> None:
+    """Consistent, professional style (matches our STIX look)."""
+    plt.rcParams.update(
+        {
+            "font.family": "serif",
+            "font.serif": ["STIXGeneral"],
+            "mathtext.fontset": "stix",
+        }
+    )
+
+def _style_grid(ax, *, axis: str = "x") -> None:
+    """Light dashed grid behind bars."""
+    ax.grid(
+        axis=axis,
+        linestyle=(0, (5, 10)),
+        linewidth=0.8,
+        color="#c7c7c7",
+        alpha=0.7,
+        zorder=1.0,
+    )
+
+
+def _wrap_cell_text(x: object, width: int = 12) -> str:
+    """Wrap long strings to multiple lines for narrow tables."""
+    
+    s = "" if x is None else str(x)
+    return "\n".join(textwrap.wrap(s, width=width)) if s else s
+
+
+def _set_table_column_widths(table, widths):
+    """
+    widths: list of floats, one per column, in *axes fraction* units.
+    """
+    cells = table.get_celld()
+    nrows = max(r for (r, c) in cells.keys()) + 1
+
+    for c, w in enumerate(widths):
+        for r in range(nrows):
+            if (r, c) in cells:
+                cells[(r, c)].set_width(w)
+
+
+
+#----------------------------------------
+#       Descriptive Plotting     
+
+
+def bar_chart_data( df              : pd.DataFrame, 
+                    var_name        : str, 
+                    *,
+                    top_n_rows      : int = 5 , 
+                    label_max_chars : int = 35  ) -> pd.DataFrame:
+    """
+    Generate bar chart data with: counts & cumulative probability.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataset.
+
+    var_name : str
+        Column name to analyze (data must be categorical / text).
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame with most common values.
+    """
+
+    col = df[var_name].fillna("N/A").astype(str)
+
+    pivot_table = (
+        col.value_counts()
+           .reset_index()
+           .rename(columns={"index": var_name})
+    )
+
+    # ---- Truncate labels safely
+    pivot_table[var_name] = pivot_table[var_name].where(
+        pivot_table[var_name].str.len() <= label_max_chars,
+        pivot_table[var_name].str.slice(0, label_max_chars - 2) + " ..."
+    )
+
+    pivot_table["%"] = (
+        pivot_table["count"] / pivot_table["count"].sum() * 100
+    ).round(2)
+
+    pivot_table["Cum. %"] = pivot_table["%"].cumsum().round(2)
+
+    return( pivot_table.head(top_n_rows) )
+
+
+
+def bar(
+    df: pd.DataFrame,
+    col_name: str,
+    *,
+    top_n: int = 5,
+    bar_color: str = "#118dff",
+    width: float = 10.0,
+    height: float = 5.0,
+    table_wrap_width: int = 12,
+    ) -> Figure:
+    """
+    Creates a combined plot with:
+    - A bar chart on the left
+    - A summary table of most frequent values on the right
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataset.
+
+    col_name : str
+        Column name to plot (data must be text).
+
+    top_n : int
+        Number of bars
+
+    bar_color : str
+        Bar color as HEX code (e.g., '#4d9b1e').
+
+    width : float, default 10.0
+        Figure width in inches.
+
+    height : float, default 5.0
+        Figure height in inches.
+    
+    table_wrap_width: int, default 12
+        Maximum number of characters per line for text wrapping inside the table categorical column.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        Final graph created
+    """
+
+    _set_plot_style()
+
+    # ---- Data
+    bar_data = bar_chart_data(df, col_name, top_n_rows=top_n).copy()
+
+    # Wrap the categorical column in the TABLE (not the y-axis labels)
+    bar_data[col_name] = bar_data[col_name].apply(lambda s: _wrap_cell_text(s, width=table_wrap_width))
+
+    # ---- Layout
+    fig = plt.figure(figsize=(width, height)  ,  constrained_layout=True)
+
+    gs = fig.add_gridspec(1, 2, width_ratios=[1.15, 0.80], wspace=0.04)
+
+    # ---- Bar chart
+    ax_bar = fig.add_subplot(gs[0, 0])
+    ax_bar.barh(
+        bar_data[col_name],
+        bar_data["count"],
+        color=bar_color,
+        edgecolor="black",
+        zorder=2.0)
+
+    ax_bar.set_title(f"Bar Chart of {col_name}", fontsize=15)
+    ax_bar.set_xlabel("Occurrences", fontsize=14)
+    ax_bar.set_ylabel(col_name, fontsize=14)
+
+    for label in (ax_bar.get_xticklabels() + ax_bar.get_yticklabels()):
+        label.set_fontsize(11)
+
+    ax_bar.invert_yaxis()
+    ax_bar.spines[["top", "right"]].set_visible(False)
+
+    _style_grid(ax_bar, axis="x")
+    ax_bar.xaxis.set_major_formatter(mtick.StrMethodFormatter("{x:,.0f}"))
+
+    # ---- Table
+    ax_table = fig.add_subplot(gs[0, 1])
+    ax_table.axis("off")
+
+
+
+    # Format BEFORE creating the table
+    table_df = bar_data.copy()
+    table_df["count"] = pd.to_numeric(table_df["count"], errors="coerce").fillna(0).astype(int).map("{:,}".format)
+    table_df["%"] = pd.to_numeric(table_df["%"], errors="coerce").map(lambda v: f"{v:.2f}")
+    table_df["Cum. %"] = pd.to_numeric(table_df["Cum. %"], errors="coerce").map(lambda v: f"{v:.2f}")
+
+
+
+    table = ax_table.table(
+        cellText=table_df.values,
+        colLabels=table_df.columns,
+        loc="center",
+        cellLoc="center",
+        bbox=[0.00 , 0.00 , 0.95 , 0.95 ]  # BBox ( left position , bottom position , table width (%), table height (%) )
+    )
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)            # slightly smaller = cleaner
+
+
+    # Base styling first
+    for cell in table.get_celld().values():
+        cell.set_linewidth(0.4)
+        cell.PAD = 0.12
+        cell.get_text().set_multialignment("center")
+
+    # Set column widths (must happen after table exists)
+    _set_table_column_widths(table, widths=[0.45, 0.20, 0.17, 0.18])
+
+    cells = table.get_celld()
+
+    # Header styling (do this AFTER base styling so it doesn't get overwritten)
+    ncols = len(table_df.columns)
+    for c in range(ncols):
+        cells[(0, c)].get_text().set_weight("bold")
+        cells[(0, c)].set_facecolor("#ebebeb")
+        cells[(0, c)].PAD = 0.22
+
+
+    # Left align the first column excluding the header. That's why we have "+1"
+    nrows = max(r for (r, c) in cells.keys()) + 1
+    for r in range(1, nrows):
+        cells[(r, 0)].get_text().set_ha("center")
+        cells[(r, 0)].PAD = 0.05
+
+    plt.close(fig)
+
+    return( fig )
+
+
+
+def hist_data(df : pd.DataFrame,  var_name : str) -> pd.DataFrame:
+    """
+    Calculate statistics for a numeric column in a pandas DataFrame.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataset.
+
+    var_name : str
+        Column name to analyze (data must be numeric).
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame with statistic names and their values.
+    """
+        
+    if var_name not in df.columns:
+        raise ValueError(f"Column '{var_name}' does not exist in the DataFrame.")
+
+    column_data = df[var_name]
+    non_blank_data = column_data.dropna()
+
+    stats = {
+        "Statistic": [
+            "Min", "25% Quartile","Mean", "Median",  "75% Quartile", 
+            "Max",  "Standard Deviation", 
+            "Count of Rows", "% Blank"
+        ],
+        "Value": [
+            column_data.min().round(2),
+            column_data.quantile(0.25).round(2),
+            column_data.mean().round(2),
+            column_data.median().round(2),
+            column_data.quantile(0.75).round(2),
+            column_data.max().round(2),
+            column_data.std().round(2),
+            int(len(column_data)),
+            round(100 * (1 - len(non_blank_data) / len(column_data)), 2) if len(column_data) > 0 else 0
+        ]
+    }
+
+    S = pd.DataFrame(stats) 
+
+    # --- formatting rules ---
+    def format_value(row):
+        stat = row["Statistic"]
+        val = row["Value"]
+
+        if stat == "Count of Rows":
+            return f"{int(val):,}"          # 1,752
+        elif stat == "% Blank":
+            return f"{val:.2f}"             # 5.02
+        else:
+            return f"{val:.2f}"             # floats
+
+    S["Value"] = S.apply(format_value, axis=1)
+
+    return( S )
+
+
+def hist(               df       : pd.DataFrame, 
+                        col_name : str, 
+                        *,
+                        xlim: Union[list, None] = None ,
+                        n_bins: int = 20 ,
+                        bar_color: str = "#118dff" ,
+                        width: float = 10.0 ,
+                        height: float = 5.0 ,   
+                        ) -> Figure:
+    """
+    Create a combined visualization: box plot, histogram, and a summary-statistics table.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataset.
+
+    col_name : str
+        Column name to plot (data must be numeric).
+    
+    xlim: list
+        The min and max range to be plotted
+
+    bar_color : str
+        Bar/box color (e.g., '#4d9b1e').
+
+    n_bins : int, default 20
+        Number of histogram bins.
+
+    width : float, default 13.33
+        Figure width in inches.
+
+    height : float, default 6.0
+        Figure height in inches.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        Final graph created
+    """
+    
+    _set_plot_style()
+
+    # Calculate statistics for the table
+    stats = hist_data(df, col_name)  # Use your utility function here 
+    stats.columns = ["Statistic", "Value"]  # Ensure proper column labels 
+
+    data = df[col_name].dropna()    
+
+    # Create the figure 
+    fig = plt.figure(figsize=(width, height)  ,  constrained_layout=True)
+    gs = fig.add_gridspec(2, 3, width_ratios=[1.3, 1.3, 1.4], height_ratios=[1, 3] , wspace=0.04)
+
+    # Box Plot (Top-Left)
+    ax_box = fig.add_subplot(gs[0, 0:2])
+    ax_box.boxplot(data, vert=False, patch_artist=True, boxprops=dict(facecolor=bar_color), zorder=2.0)  
+    ax_box.tick_params(axis="x",which="both",bottom=False,top=False,labelbottom=False)
+
+    if xlim is not None:
+        ax_box.set_xlim(xlim)
+        
+    ax_box.axes.get_yaxis().set_visible(False)                              # Hide y-axis for box plot
+    ax_box.set_xticklabels([])                                              # Remove x-axis labels
+    ax_box.spines[['top','left', 'right', 'bottom']].set_visible(False)     # Remove border
+    ax_box.set_title(f"Histogram of {col_name}", fontsize = 15)             # Set title
+    
+    
+    #--------------------
+    # Histogram (Bottom-Left)
+    ax_hist = fig.add_subplot(gs[1, 0:2])
+
+    _style_grid(ax_hist, axis="x")
+    _style_grid(ax_hist, axis="y")
+
+
+    if xlim == None:
+        ax_hist.hist(data, bins=n_bins, color=bar_color, edgecolor='black', zorder = 4.0)
+    else:
+        ax_hist.hist(data, bins=n_bins, range = xlim, color=bar_color, edgecolor='black', zorder = 4.0)
+    
+    ax_hist.set_xlabel(col_name, fontsize=14)
+    ax_hist.set_ylabel("Count", fontsize = 14)
+
+    # Increase font size
+    for label in (ax_hist.get_xticklabels() + ax_hist.get_yticklabels()): 
+        label.set_fontsize(11)
+    
+    ax_hist.spines[['top','right']].set_visible(False)
+    
+    # commas for y-axis (12345 --> 12,345)
+    ax_hist.yaxis.set_major_formatter(
+        mtick.StrMethodFormatter('{x:,.0f}')
+    )
+
+
+    #--------------------
+    #   Table (Right)
+    ax_table = fig.add_subplot(gs[:, 2])  # Span rows 0 and 1 for the table
+    ax_table.axis("off")  # Turn off the axis
+
+
+    table = ax_table.table(
+        cellText=stats.values,
+        colLabels=stats.columns,
+        loc="center",
+        cellLoc="center",
+        bbox=[0.00 , 0.00 , 0.95 , 0.80 ] # BBox ( left position , bottom position , table width (%), table height (%) )
+        )
+    
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.auto_set_column_width(col=list(range(len(stats.columns))))
+
+
+    cells = table.get_celld()
+
+    # Slightly lighten table borders
+    for cell in table.get_celld().values():
+        cell.set_linewidth(0.5)
+
+    ncols = len(stats.columns)
+    for c in range(ncols):
+        cells[(0, c)].get_text().set_weight("bold")
+        cells[(0, c)].set_facecolor("#ebebeb")
+        cells[(0, c)].PAD = 0.22
+    
+    plt.close(fig)
+
+    return( fig )
+
+
+
+
+#----------------------------------------
+#   Exploritory Data Analysis - EDA   
+
+
+def _in_notebook() -> bool:
+    """
+    This function returns True or False:
+    
+    True  --> The Python code is       being executed in a Jupyter Notebook
+    False --> The Python code is  NOT  being executed in a Jupyter Notebook
+    
+    Returns
+    ----------
+    bool
+    """
+    try:
+        from IPython import get_ipython
+        shell = get_ipython().__class__.__name__
+        return shell == "ZMQInteractiveShell"  # Jupyter/VSCode notebooks
+    except Exception:
+        return False
+    
+
+def EDA( df: pd.DataFrame ) -> list[Figure]:
+    """
+    This function is a quick “EDA” analysis. (Exploratory Data Analysis)
+    Plot the distribution for every column in a dataset.  
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input dataset.
+
+    Returns
+    ----------
+    list[matplotlib.figure.Figure]
+        Figures created.
+    """
+
+    n_row, n_col = df.shape
+    bar_colors = ["#826fc2","#143499","#4d9b1e","#f865c6","#ecd378","#ba004c","#8f4400","#f65656"]*(n_col*2)
+    figs = []
+
+
+    in_nb = _in_notebook()
+    if in_nb:
+        from IPython.display import display
+    
+        
+    for count, var_name in enumerate(df.columns):
+        
+        # IF the column is 100% blank then skip it
+        if df[var_name].isna().all():
+            continue
+
+
+        bar_color_i = bar_colors[count]            
+
+        if pd.api.types.is_numeric_dtype( df[var_name] ):
+            fig = hist(df,var_name, bar_color = bar_color_i)
+            figs.append(fig)
+
+        elif (pd.api.types.is_string_dtype(df[var_name]) or pd.api.types.is_object_dtype(df[var_name]) or pd.api.types.is_categorical_dtype(df[var_name])):
+            fig = bar(df, var_name, bar_color = bar_color_i)
+            figs.append(fig)
+        
+
+        # IF the data type is not numeric, or text, 
+        # THEN stop the loop 
+        # AND go to the next iteration
+        else: 
+            continue
+        
+        if in_nb:
+            display(fig)
+
+    return(figs)
+
+
+
+
+
+
+
 #----------------------------------------
 #       Data Loading & Profile    
-
-
-def hello():
-    print("Welcome to DataNova!")
 
 
 def load_data(uploaded_file:str,  excel_sheet: Optional[Union[str, int]] = 0) -> pd.DataFrame:
@@ -133,398 +646,6 @@ def profile( df:pd.DataFrame ) -> pd.DataFrame:
         final.drop(columns='Unique', inplace=True)
 
     return( final )
-
-
-
-#----------------------------------------
-#       Descriptive Plotting     
-
-
-def bar_chart_data( df        : pd.DataFrame, 
-                    var_name  : str, 
-                    top_n_rows: int   = 6 ) -> pd.DataFrame:
-    """
-    Efficiently generate bar chart data with counts, cumulative probability.
-    
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input dataset.
-
-    var_name : str
-        Column name to analyze (data must be categorical / text).
-
-    Returns
-    -------
-    pd.DataFrame
-        A DataFrame with most common values.
-    """
-
-    col = df[var_name].fillna("N/A").astype(str)
-
-    pivot_table = (
-        col.value_counts()
-           .reset_index()
-           #.rename(columns={"index": var_name, var_name: "Occurrences"})
-           .rename(columns={"index": var_name} )
-    )
-
-    pivot_table["Percentage"] = (
-        pivot_table["count"] / pivot_table["count"].sum() * 100
-    ).round(2)
-
-    pivot_table["Cumulative %"] = pivot_table["Percentage"].cumsum().round(2)
-
-    return( pivot_table.head(top_n_rows) )
-
-
-
-def bar(                df       : pd.DataFrame, 
-                        col_name : str, 
-                        * , 
-                        top_n    : int   = 5 ,
-                        bar_color: str   = "#118dff", 
-                        width    : float = 13.33 , 
-                        height   : float =  6.0    ) -> Figure:
-    """
-    Creates a combined plot with:
-    - A bar chart on the left
-    - A summary table of most frequent values on the right
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input dataset.
-
-    col_name : str
-        Column name to plot (data must be text).
-
-    top_n : int
-        Number of bars
-
-    bar_color : str
-        Bar color as HEX code (e.g., '#4d9b1e').
-
-    width : float, default 13.33
-        Figure width in inches.
-
-    height : float, default 6.0
-        Figure height in inches.
-
-    Returns
-    -------
-    matplotlib.figure.Figure
-        Final graph created
-    """
-
-    plt.rcParams["font.family"] = "Times New Roman"
-
-    # Calculate bar chart data using your utility function
-    bar_data = bar_chart_data(df, col_name, top_n_rows=top_n)
-
-    # Truncate y-axis labels
-    max_label_length = 12  # Maximum length for y-axis labels
-    bar_data[col_name] = bar_data[col_name].apply(lambda x: x[:max_label_length] + "..." if len(x) > max_label_length else x)
-
-    # Create the figure 
-    fig = plt.figure(figsize=(width, height))  # Adjust figure size as needed
-    gs = gridspec.GridSpec(1, 2, width_ratios=[1.1, 1])  # Grid layout for bar chart and table
-
-    # Bar Chart (Left)
-    ax_bar = fig.add_subplot(gs[0, 0])
-    ax_bar.grid(axis='x', zorder=1.0)
-    ax_bar.barh(bar_data[col_name], bar_data["count"], color=bar_color, edgecolor="black", zorder=2.0)
-
-    ax_bar.set_title(f"Bar Chart of {col_name}", fontsize=15)
-    ax_bar.set_xlabel("Occurrences", fontsize=14)
-    ax_bar.set_ylabel(col_name, fontsize=14)
-
-    # Increase font size for tick labels
-    for label in (ax_bar.get_xticklabels() + ax_bar.get_yticklabels()):
-        label.set_fontsize(11)
-
-    ax_bar.invert_yaxis()  # Invert y-axis for better readability
-    ax_bar.spines[['top', 'right']].set_visible(False)
-
-    ax_bar.xaxis.set_major_formatter(
-        mtick.StrMethodFormatter('{x:,.0f}')
-    )
-
-    # Table (Right)
-    ax_table = fig.add_subplot(gs[0, 1])
-    ax_table.axis("off")  # Turn off axis for table
-    table = ax_table.table(
-        cellText=bar_data.values,
-        colLabels=bar_data.columns,
-        loc="center",
-        cellLoc="center"
-    )
-
-    # Adjust table properties
-    table.auto_set_font_size(False)
-    table.set_fontsize(12)
-
-    # Dynamically adjust column widths
-    col_width_scale = max(1, width / 13.33 * 1.2)  # Scale columns based on figure width
-    table.scale(col_width_scale, 1.55)
-
-    # Truncate long text in the first column
-    for cell in table.get_celld().values():
-        cell_text = cell.get_text().get_text()
-        if len(cell_text) > 20:  # Limit text to 20 characters
-            truncated_text = cell_text[:11] + "..."
-            cell.get_text().set_text(truncated_text)
-
-    # Adjust layout to avoid overlap
-    plt.tight_layout()
-
-    plt.close(fig)
-    
-    return( fig )
-
-
-
-def hist_data(df : pd.DataFrame,  var_name : str) -> pd.DataFrame:
-    """
-    Calculate statistics for a numeric column in a pandas DataFrame.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input dataset.
-
-    var_name : str
-        Column name to analyze (data must be numeric).
-
-    Returns
-    -------
-    pd.DataFrame
-        A DataFrame with statistic names and their values.
-    """
-        
-    if var_name not in df.columns:
-        raise ValueError(f"Column '{var_name}' does not exist in the DataFrame.")
-
-    column_data = df[var_name]
-    non_blank_data = column_data.dropna()
-
-    stats = {
-        "Statistic": [
-            "Min", "25% Quartile","Mean", "Median",  "75% Quartile", 
-            "Max",  "Standard Deviation", 
-            "Count of Rows", "Count of Rows Not Blank", "% Blank"
-        ],
-        "Value": [
-            column_data.min().round(2),
-            column_data.quantile(0.25).round(2),
-            column_data.mean().round(2),
-            column_data.median().round(2),
-            column_data.quantile(0.75).round(2),
-            column_data.max().round(2),
-            column_data.std().round(2),
-            len(column_data),
-            len(non_blank_data),
-            round(100 * (1 - len(non_blank_data) / len(column_data)), 2) if len(column_data) > 0 else 0
-        ]
-    }
-
-    S = pd.DataFrame(stats) 
-    return( S )
-
-
-def hist(               df       : pd.DataFrame, 
-                        col_name : str, 
-                        *,
-                        xlim: Union[list, None] = None ,
-                        n_bins: int = 20 ,
-                        bar_color: str = "#118dff" ,
-                        width: float = 13.33 ,
-                        height: float = 6.0 ,   
-                        ) -> Figure:
-    """
-    Create a combined visualization: box plot, histogram, and a summary-statistics table.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input dataset.
-
-    col_name : str
-        Column name to plot (data must be numeric).
-    
-    xlim: list
-        The min and max range to be plotted
-
-    bar_color : str
-        Bar/box color (e.g., '#4d9b1e').
-
-    n_bins : int, default 20
-        Number of histogram bins.
-
-    width : float, default 13.33
-        Figure width in inches.
-
-    height : float, default 6.0
-        Figure height in inches.
-
-    Returns
-    -------
-    matplotlib.figure.Figure
-        Final graph created
-
-    """
-    plt.rcParams["font.family"] = "Times New Roman"
-
-    
-    # Calculate statistics for the table
-    stats = hist_data(df, col_name)  # Use your utility function here 
-    stats.columns = ["Statistic", "Value"]  # Ensure proper column labels 
-
-    data = df[col_name].dropna()    
-
-    # Create the figure 
-    fig = plt.figure(figsize=(width, height))  # Adjust the figure size as needed
-    gs = gridspec.GridSpec(2, 3, width_ratios=[2, 1, 2], height_ratios=[1, 3])  # Adjust grid layout
-
-    # Box Plot (Top-Left)
-    ax_box = fig.add_subplot(gs[0, 0:2])
-    ax_box.boxplot(data, vert=False, patch_artist=True, boxprops=dict(facecolor=bar_color), zorder=2.0)  
-    #ax_box.grid(axis='x',zorder=1.0)
-
-    if xlim is not None:
-        ax_box.set_xlim(xlim)
-        
-    ax_box.axes.get_yaxis().set_visible(False)  # Hide y-axis for box plot
-    ax_box.set_xticklabels([])                  # Remove x-axis labels
-    ax_box.spines[['top','left', 'right', 'bottom']].set_visible(False)
-    ax_box.set_title(f"Histogram of {col_name}", fontsize = 15)
-
-    # Histogram (Bottom-Left)
-    ax_hist = fig.add_subplot(gs[1, 0:2])
-    ax_hist.grid(axis='x' ,zorder=3.0)
-
-
-    if xlim == None:
-        ax_hist.hist(data, bins=n_bins, color=bar_color, edgecolor='black', zorder = 4.0)
-    else:
-        ax_hist.hist(data, bins=n_bins, range = xlim, color=bar_color, edgecolor='black', zorder = 4.0)
-    
-    ax_hist.set_xlabel(col_name, fontsize=13)
-    ax_hist.set_ylabel("Count", fontsize = 13)
-    for label in (ax_hist.get_xticklabels() + ax_hist.get_yticklabels()): label.set_fontsize(11)
-    ax_hist.spines[['top','right']].set_visible(False)
-    
-    # commas for y-axis (12,345 --> 12,345)
-    ax_hist.yaxis.set_major_formatter(
-        mtick.StrMethodFormatter('{x:,.0f}')
-    )
-
-    # Table (Right)
-    ax_table = fig.add_subplot(gs[:, 2])  # Span rows 0 and 1 for the table
-    ax_table.axis("off")  # Turn off the axis
-    table = ax_table.table(
-        cellText=stats.values,
-        colLabels=stats.columns,
-        loc="center",
-        cellLoc="center")
-    
-    table.auto_set_font_size(False)
-    table.set_fontsize(14)
-    table.auto_set_column_width(col=list(range(len(stats.columns))))
-
-    table.scale(1 , 1.75)
-
-    # Adjust layout to avoid overlap
-    plt.tight_layout()
-    plt.close(fig)
-    
-    return( fig )
-
-
-
-
-#----------------------------------------
-#   Exploritory Data Analysis - EDA   
-
-
-def _in_notebook() -> bool:
-    """
-    This function returns True or False:
-    
-    True  --> The Python code is       being executed in a Jupyter Notebook
-    False --> The Python code is  NOT  being executed in a Jupyter Notebook
-    
-    Returns
-    ----------
-    bool
-    """
-    try:
-        from IPython import get_ipython
-        shell = get_ipython().__class__.__name__
-        return shell == "ZMQInteractiveShell"  # Jupyter/VSCode notebooks
-    except Exception:
-        return False
-    
-
-def EDA( df: pd.DataFrame ) -> list[Figure]:
-    """
-    This function is a quick “EDA” analysis. (Exploratory Data Analysis)
-    Plot the distribution for every column in a dataset.  
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input dataset.
-
-    Returns
-    ----------
-    list[matplotlib.figure.Figure]
-        Figures created.
-    """
-
-    n_row, n_col = df.shape
-    bar_colors = ["#826fc2","#143499","#4d9b1e","#f865c6","#ecd378","#ba004c","#8f4400","#f65656"]*(n_col*2)
-    figs = []
-
-
-    in_nb = _in_notebook()
-    if in_nb:
-        from IPython.display import display
-    
-        
-    for count, var_name in enumerate(df.columns):
-        
-        # IF the column is 100% blank then skip it
-        if df[var_name].isna().all():
-            continue
-
-
-        bar_color_i = bar_colors[count]            
-
-        if pd.api.types.is_numeric_dtype( df[var_name] ):
-            fig = hist(df,var_name, bar_color = bar_color_i)
-            figs.append(fig)
-
-        elif (pd.api.types.is_string_dtype(df[var_name]) or pd.api.types.is_object_dtype(df[var_name]) or pd.api.types.is_categorical_dtype(df[var_name])):
-            fig = bar(df, var_name, bar_color = bar_color_i)
-            figs.append(fig)
-        
-
-        # IF the data type is not numeric, or text, 
-        # THEN stop the loop 
-        # AND go to the next iteration
-        else: 
-            continue
-        
-        if in_nb:
-            display(fig)
-
-    return(figs)
-
-
-
-
-
 
 
 
