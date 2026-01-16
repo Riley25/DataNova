@@ -12,14 +12,15 @@
 #                            NOTES
 #
 #  
-
+# This line always has to be first!!!!
+from __future__ import annotations
 
 
 # Standard Library 
 import os
 import textwrap
 from typing import Optional, Sequence, Union
-from __future__ import annotations
+
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
