@@ -21,7 +21,7 @@ import os
 import textwrap
 from typing import Optional, Sequence, Union
 
-
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.figure import Figure
@@ -269,7 +269,13 @@ def bar(
         cells[(r, 0)].get_text().set_ha("center")
         cells[(r, 0)].PAD = 0.05
 
-    plt.close(fig)
+
+    # Do not show plot IF DataNova is running in Jupyter. 
+    # This prevents double plotting. 
+    backend = matplotlib.get_backend().lower()
+    if "matplotlib_inline" in backend:        
+        plt.close(fig)
+    
 
     return( fig )
 
@@ -463,7 +469,11 @@ def hist(               df       : pd.DataFrame,
         cells[(0, c)].set_facecolor("#ebebeb")
         cells[(0, c)].PAD = 0.22
     
-    plt.close(fig)
+    # Do not show plot IF DataNova is running in Jupyter. 
+    # This prevents double plotting. 
+    backend = matplotlib.get_backend().lower()
+    if "matplotlib_inline" in backend:        
+        plt.close(fig)
 
     return( fig )
 
@@ -683,7 +693,12 @@ def lm(
     ax.legend( loc="upper left", bbox_to_anchor=(.15, 1.25), fancybox=True, shadow=True, frameon=True, fontsize=12)
 
     fig.tight_layout()
-    plt.close(fig)
+    
+    # Do not show plot IF DataNova is running in Jupyter. 
+    # This prevents double plotting. 
+    backend = matplotlib.get_backend().lower()
+    if "matplotlib_inline" in backend:        
+        plt.close(fig)
     
     return( fig , model )
 
