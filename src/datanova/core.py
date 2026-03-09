@@ -305,24 +305,46 @@ def hist_data(df : pd.DataFrame,  var_name : str) -> pd.DataFrame:
     column_data = df[var_name]
     non_blank_data = column_data.dropna()
 
-    stats = {
-        "Statistic": [
-            "Min", "25% Quartile","Mean", "Median",  "75% Quartile", 
-            "Max",  "Standard Deviation", 
-            "Count of Rows", "% Blank"
-        ],
-        "Value": [
-            column_data.min().round(2),
-            column_data.quantile(0.25).round(2),
-            column_data.mean().round(2),
-            column_data.median().round(2),
-            column_data.quantile(0.75).round(2),
-            column_data.max().round(2),
-            column_data.std().round(2),
-            int(len(column_data)),
-            round(100 * (1 - len(non_blank_data) / len(column_data)), 2) if len(column_data) > 0 else 0
-        ]
-    }
+    try:
+        stats = {
+            "Statistic": [
+                "Min", "25% Quartile","Mean", "Median",  "75% Quartile", 
+                "Max",  "Standard Deviation", 
+                "Count of Rows", "% Blank"
+            ],
+            "Value": [
+                column_data.min().round(2),
+                column_data.quantile(0.25).round(2),
+                column_data.mean().round(2),
+                column_data.median().round(2),
+                column_data.quantile(0.75).round(2),
+                column_data.max().round(2),
+                column_data.std().round(2),
+                int(len(column_data)),
+                round(100 * (1 - len(non_blank_data) / len(column_data)), 2) if len(column_data) > 0 else 0
+            ]
+        }
+    except:
+        # Note: On March 2026 we recieved an error showing integers cannot be roudnded? 
+        #       Created an "except" block to ignore any rounding. 
+        stats = {
+            "Statistic": [
+                "Min", "25% Quartile","Mean", "Median",  "75% Quartile", 
+                "Max",  "Standard Deviation", 
+                "Count of Rows", "% Blank"
+            ],
+            "Value": [
+                column_data.min(),
+                column_data.quantile(0.25),
+                column_data.mean(),
+                column_data.median(),
+                column_data.quantile(0.75),
+                column_data.max(),
+                column_data.std(),
+                int(len(column_data)),
+                round(100 * (1 - len(non_blank_data) / len(column_data)), 2) if len(column_data) > 0 else 0
+            ]
+        }        
 
     S = pd.DataFrame(stats) 
 
