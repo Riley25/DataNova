@@ -97,7 +97,8 @@ def bar_chart_data( df              : pd.DataFrame,
                     var_name        : str, 
                     *,
                     top_n_rows      : int = 5 , 
-                    label_max_chars : int = 35  ) -> pd.DataFrame:
+                    label_max_chars : int = 35  ,
+                    truncate_labels : bool = False) -> pd.DataFrame:
     """
     Generate bar chart data with: counts & cumulative probability.
     
@@ -124,10 +125,11 @@ def bar_chart_data( df              : pd.DataFrame,
     )
 
     # ---- Truncate labels safely
-    pivot_table[var_name] = pivot_table[var_name].where(
-        pivot_table[var_name].str.len() <= label_max_chars,
-        pivot_table[var_name].str.slice(0, label_max_chars - 2) + " ..."
-    )
+    if truncate_labels:
+        pivot_table[var_name] = pivot_table[var_name].where(
+            pivot_table[var_name].str.len() <= label_max_chars,
+            pivot_table[var_name].str.slice(0, label_max_chars - 2) + " ..."
+        )
 
     pivot_table["%"] = (
         pivot_table["count"] / pivot_table["count"].sum() * 100
@@ -186,7 +188,7 @@ def bar(
     _set_plot_style()
 
     # ---- Data
-    bar_data = bar_chart_data(df, col_name, top_n_rows=top_n).copy()
+    bar_data = bar_chart_data(df, col_name, top_n_rows=top_n , truncate_labels=True).copy()
 
     # Wrap the categorical column in the TABLE (not the y-axis labels)
     bar_data[col_name] = bar_data[col_name].apply(lambda s: _wrap_cell_text(s, width=table_wrap_width))

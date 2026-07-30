@@ -3,14 +3,18 @@
 </p>
 
 # 🌌 DataNova
-**DataNova** — a toolkit for data exploration in Python with a few lines of code!
+**DataNova** — Quickly explore your data in a few lines of code!
 
----
+
+## 🛠️ Installation
+```bash
+pip install DataNova
+``` 
 
 ## 🚀 Features
-- **Instant profiling**: Summarize your data with `profile(df)`
-- **Bar Graph**: Shows the top 5 most common values `bar(df, 'Column_Name')`
-- **Histogram**: Plots the distribution of numerical data `hist(df, 'Column_Name')`
+- **Data Profile**: Assess the quality of your data  `profile(df)`
+- **Bar Graph**: Shows the top 5 most common values  `bar(df, 'Column_Name')`
+- **Histogram**: Plots the distribution  `hist(df, 'Column_Name')`
 - **Exploratory Data Analysis**: `EDA(df)`
 - **Simple Linear Regression**: `lm(df, x_var, y_var)`
 
@@ -18,11 +22,9 @@
 - **Logistic Regression** (coming soon!)
 
 
-
-
 ---
 
-## 🧭 Examples
+## Examples
 
 Examples below use a dataset provided in the package called `WINE_DF`
 
@@ -101,10 +103,6 @@ display( figure )
 
 
 
---- 
 
-## 🛠️ Installation
-```bash
-pip install DataNova
-``` 
+
 
