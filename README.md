@@ -65,7 +65,7 @@ $$\\:$$
 ```python
 hist( WINE_DF , 'price' , xlim = [0,105], n_bins = 25)
 ```
-- On average, a bottle of wine costs $38. The price ranges from: $20-$48
+- On average, a bottle of wine costs 38 USD. The price ranges from: 20-48 USD
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Riley25/DataNova/refs/heads/main/images/histogram.png" alt="Histogram Example" width="800">
